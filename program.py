@@ -1,14 +1,11 @@
-def d_wo_diag(x1, y1, x2, y2):
-    return abs(x1 - x2) + abs(y1 - y2)
+def dist_manhattan(x1, y1, x2, y2):
+    return abs(int(x1) - int(x2)) + abs(int(y1) - int(y2))
 
-
-def d_normal(x1, y1, x2, y2):
-    return ((x1 - x2)**2 + (y1 - y2) ** 2) ** 0.5
 
 # reading data
 inp = open("input.txt")
 pointsCount = int(inp.readline())
-array = [[]]  # [] so 0th element present
+array = []
 for line in inp:
     array.append(line.replace('\n', '').split(' '))
 inp.close()
@@ -16,21 +13,30 @@ inp.close()
 # initialization
 dist = [0] + [float('inf')] * (pointsCount - 1)  # [0, inf, inf, ...]
 parent = [float('NaN')] * pointsCount  # [nan, nan, ...]
-queue = list(range(1, pointsCount + 1))
+queue = list(range(1, pointsCount))
+added = [0]
 print(array)
-print(dist)
-print(parent)
-print(queue)
+
 # main loop
-while queue:
-    curP = queue.pop()
-    for i in range(1, pointsCount + 1):
-        p = array[i]
-        if p != curP and p in queue:
-            distance = d_wo_diag(p[0], p[1], curP[0], curP[1])
-            if distance < dist[p]:
-                dist[i] = distance
-                parent[i] = p
+for curPointIndex in queue:
+    for treePointIndex in range(0, pointsCount):
+        if treePointIndex != curPointIndex and parent[treePointIndex] != curPointIndex:
+            distance = dist_manhattan(array[treePointIndex][0], array[treePointIndex][1],
+                                      array[curPointIndex][0], array[curPointIndex][1])
+            if distance < dist[curPointIndex]:
+                dist[curPointIndex] = distance
+                parent[curPointIndex] = treePointIndex
+                added.append(curPointIndex)
+
 # outputting data
+print(parent)
 out = open('output.txt', 'w')
+for i in range(0, pointsCount):
+    out.write(str(i)+' ')
+    neighbors = []
+    for j in range(0, pointsCount):
+        if parent[j] == i or parent[i] == j:
+            out.write(str(j )+' ')
+    out.write('\n')
+out.write(str(sum(dist)))
 out.close()
