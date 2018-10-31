@@ -15,12 +15,11 @@ dist = [0] + [float('inf')] * (pointsCount - 1)  # [0, inf, inf, ...]
 parent = [float('NaN')] * pointsCount  # [nan, nan, ...]
 queue = list(range(1, pointsCount))
 added = [0]
-print(array)
 
 # main loop
 for curPointIndex in queue:
     for treePointIndex in range(0, pointsCount):
-        if treePointIndex != curPointIndex and parent[treePointIndex] != curPointIndex:
+        if treePointIndex != curPointIndex and parent[treePointIndex] != curPointIndex and treePointIndex in added:
             distance = dist_manhattan(array[treePointIndex][0], array[treePointIndex][1],
                                       array[curPointIndex][0], array[curPointIndex][1])
             if distance < dist[curPointIndex]:
@@ -29,14 +28,15 @@ for curPointIndex in queue:
                 added.append(curPointIndex)
 
 # outputting data
+print(array)
 print(parent)
+print(dist)
 out = open('output.txt', 'w')
 for i in range(0, pointsCount):
-    out.write(str(i)+' ')
-    neighbors = []
+    out.write(str(i + 1)+' ')
     for j in range(0, pointsCount):
         if parent[j] == i or parent[i] == j:
-            out.write(str(j )+' ')
+            out.write(str(j + 1)+' ')
     out.write('\n')
 out.write(str(sum(dist)))
 out.close()
